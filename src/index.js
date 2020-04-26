@@ -15,82 +15,114 @@ function Handle_forEach(t, path, aggressive_optimization, possible_undefined) {
 			])
 		)
 
+	const test = t.blockStatement(path.node.arguments[0].body.body);
+	console.log(path.node.arguments[0].body.body)
 	path.getStatementParent().insertBefore ([
-		t.variableDeclaration("let", [
-			t.variableDeclarator (
-				arrayName,
-				path.node.callee.object
-			)
-		]),
+		// t.variableDeclaration("let", [
+		// 	t.variableDeclarator (
+		// 		arrayName,
+		// 		path.node.callee.object
+		// 	)
+		// ]),
 
-		t.variableDeclaration("let", [
-			t.variableDeclarator (
-				funcName,
-				path.node.arguments[0]
-			)
-		]),
+		// t.variableDeclaration("let", [
+		// 	t.variableDeclarator (
+		// 		funcName,
+		// 		path.node.arguments[0]
+		// 	)
+		// ]),
 
-		aggressive_optimization
-			? t.forStatement (
-				t.variableDeclaration("let", [
-					t.variableDeclarator (
-						iterator,
+		t.forStatement (
+			t.variableDeclaration("let", [
+				t.variableDeclarator (
+					iterator,
+					t.memberExpression (
+						arrayName,
+						t.identifier("length")
+					)
+				)
+			]),
+			possible_undefined
+				? t.logicalExpression (
+					"&&",
+					t.updateExpression("--", iterator),
+					t.binaryExpression (
+						"!==",
 						t.memberExpression (
 							arrayName,
-							t.identifier("length")
-						)
-					)
-				]),
-				possible_undefined
-					? t.logicalExpression (
-						"&&",
-						t.updateExpression("--", iterator),
-						t.binaryExpression (
-							"!==",
-							t.memberExpression (
-								arrayName,
-								iterator,
-								true
-							),
-							t.identifier("undefined")
-						)
-					)
-					: t.updateExpression("--", iterator),
-				null,
-				call
-			)
-			: t.forStatement (
-				t.variableDeclaration("let", [
-					t.variableDeclarator (
-						iterator,
-						t.numericLiteral(0)
-					)
-				]),
-				possible_undefined
-					? t.logicalExpression (
-						"&&",
-						t.binaryExpression (
-							"<",
 							iterator,
-							t.memberExpression (
-								arrayName,
-								t.identifier("length")
-							)
+							true
 						),
-						t.binaryExpression (
-							"!==",
-							t.memberExpression (
-								arrayName,
-								iterator,
-								true
-							),
-							t.identifier("undefined")
-						)
+						t.identifier("undefined")
 					)
-					: t.updateExpression("--", iterator),
-				t.updateExpression("++", iterator),
-				call
-			)
+				)
+				: t.updateExpression("--", iterator),
+			null,
+			test
+		)
+
+		// aggressive_optimization
+		// 	? t.forStatement (
+		// 		t.variableDeclaration("let", [
+		// 			t.variableDeclarator (
+		// 				iterator,
+		// 				t.memberExpression (
+		// 					arrayName,
+		// 					t.identifier("length")
+		// 				)
+		// 			)
+		// 		]),
+		// 		possible_undefined
+		// 			? t.logicalExpression (
+		// 				"&&",
+		// 				t.updateExpression("--", iterator),
+		// 				t.binaryExpression (
+		// 					"!==",
+		// 					t.memberExpression (
+		// 						arrayName,
+		// 						iterator,
+		// 						true
+		// 					),
+		// 					t.identifier("undefined")
+		// 				)
+		// 			)
+		// 			: t.updateExpression("--", iterator),
+		// 		null,
+		// 		call
+		// 	)
+		// 	: t.forStatement (
+		// 		t.variableDeclaration("let", [
+		// 			t.variableDeclarator (
+		// 				iterator,
+		// 				t.numericLiteral(0)
+		// 			)
+		// 		]),
+		// 		possible_undefined
+		// 			? t.logicalExpression (
+		// 				"&&",
+		// 				t.binaryExpression (
+		// 					"<",
+		// 					iterator,
+		// 					t.memberExpression (
+		// 						arrayName,
+		// 						t.identifier("length")
+		// 					)
+		// 				),
+		// 				t.binaryExpression (
+		// 					"!==",
+		// 					t.memberExpression (
+		// 						arrayName,
+		// 						iterator,
+		// 						true
+		// 					),
+		// 					t.identifier("undefined")
+		// 				)
+		// 			)
+		// 			: t.updateExpression("--", iterator),
+		// 		t.updateExpression("++", iterator),
+		// 		// call
+		// 		test	
+		// 	)
 	])
 
 	path.remove()
@@ -541,27 +573,30 @@ export default babel => {
 
 	return {
 		visitor: {
-			IfStatement(path) {
-				if (!t.isBlockStatement(path.node.consequent))
-					path.node.consequent = t.blockStatement([ path.node.consequent ]);
-			},
+			// IfStatement(path) {
+			// 	if (!t.isBlockStatement(path.node.consequent))
+			// 		path.node.consequent = t.blockStatement([ path.node.consequent ]);
+			// },
 
-			ForStatement(path) {
-				if (!t.isBlockStatement(path.node.body))
-					path.node.body = t.blockStatement([ path.node.body ]);
-			},
+			// ForStatement(path) {
+			// 	if (!t.isBlockStatement(path.node.body))
+			// 		path.node.body = t.blockStatement([ path.node.body ]);
+			// },
 
-			WhileStatement(path) {
-				if (!t.isBlockStatement(path.node.body))
-					path.node.body = t.blockStatement([ path.node.body ]);
-			},
+			// WhileStatement(path) {
+			// 	if (!t.isBlockStatement(path.node.body))
+			// 		path.node.body = t.blockStatement([ path.node.body ]);
+			// },
 
-			ArrowFunctionExpression(path) {
-				if (!t.isBlockStatement(path.node.body))
-					path.node.body = t.blockStatement([ t.returnStatement(path.node.body) ]);
-			},
+			// ArrowFunctionExpression(path) {
+			// 	console.log('arrow function')
+			// 	console.log(path.node.body)
+			// 	if (!t.isBlockStatement(path.node.body))
+			// 		path.node.body = t.blockStatement([ t.returnStatement(path.node.body) ]);
+			// },
 
 			CallExpression(path) {
+				console.log('call',path?.node?.callee?.property?.name)
 				// Don't modify if in ternary
 				if (path.findParent(path => path.isConditionalExpression()))
 					return

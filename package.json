@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "babel -d ./lib ./src",
 		"prepublish": "babel -d ./lib ./src --minified",
-		"test": "babel --no-babelrc --plugins=./lib/index.js test.ts --out-file test.opt.js"
+		"test": "babel --no-babelrc --plugins=./lib/index.js test.js --out-file test.opt.js"
 	},
 	"repository": {
 		"type": "git",
